@@ -28,7 +28,7 @@ Manuell
 3. **Ortsnetz Map Backend** installieren.
 4. Home Assistant neu starten.
 5. **Einstellungen → Geräte & Dienste → Integration hinzufügen → Ortsnetz Map** öffnen und einrichten.
-6. Zusätzlich das separate HACS-Dashboard-Repository `ortsnetz-map-card` installieren.
+6. Zusätzlich die separate [Ortsnetz Map Card](https://github.com/BeGiBue/ortsnetz-map-card) über HACS installieren.
 
 ## Datenfluss
 
