@@ -23,13 +23,12 @@ Automatisch
 
 Manuell
 
-1. Dieses Repository auf GitHub bereitstellen, empfohlen als `home-assistant-ortsnetz-map`.
-2. In HACS **Benutzerdefinierte Repositories** öffnen.
-3. Repository-URL hinzufügen und als Typ **Integration** auswählen.
-4. **Ortsnetz Map Backend** installieren.
-5. Home Assistant neu starten.
-6. **Einstellungen → Geräte & Dienste → Integration hinzufügen → Ortsnetz Map** öffnen und einrichten.
-7. Zusätzlich das separate HACS-Dashboard-Repository `ortsnetz-map-card` installieren.
+1. In HACS **Benutzerdefinierte Repositories** öffnen.
+2. Repository-URL hinzufügen und als Typ **Integration** auswählen.
+3. **Ortsnetz Map Backend** installieren.
+4. Home Assistant neu starten.
+5. **Einstellungen → Geräte & Dienste → Integration hinzufügen → Ortsnetz Map** öffnen und einrichten.
+6. Zusätzlich das separate HACS-Dashboard-Repository `ortsnetz-map-card` installieren.
 
 ## Datenfluss
 
