@@ -1,0 +1,14 @@
+{
+  "title": "Ortsnetz Map",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ortsnetz Map einrichten",
+        "description": "Richtet den serverseitigen Abruf der Messpunkte von ortsnetz-auslastung.de ein. Der Kartenmittelpunkt wird in der Custom Card automatisch aus dem Home-Assistant-Standort übernommen."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Ortsnetz Map ist bereits eingerichtet."
+    }
+  }
+}

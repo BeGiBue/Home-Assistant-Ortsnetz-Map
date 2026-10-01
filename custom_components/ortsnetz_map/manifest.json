@@ -1,0 +1,13 @@
+{
+  "domain": "ortsnetz_map",
+  "name": "Ortsnetz Map Backend",
+  "version": "0.3.0",
+  "config_flow": true,
+  "single_config_entry": true,
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "documentation": "https://github.com/BeGiBue/home-assistant-ortsnetz-map",
+  "issue_tracker": "https://github.com/BeGiBue/home-assistant-ortsnetz-map/issues",
+  "codeowners": ["BeGiBue"],
+  "requirements": []
+}
