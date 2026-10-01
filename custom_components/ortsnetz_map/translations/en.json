@@ -1,0 +1,14 @@
+{
+  "title": "Ortsnetz Map",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Ortsnetz Map",
+        "description": "Sets up server-side retrieval of map points from ortsnetz-auslastung.de. The custom card automatically uses the Home Assistant location as its map center."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Ortsnetz Map is already configured."
+    }
+  }
+}

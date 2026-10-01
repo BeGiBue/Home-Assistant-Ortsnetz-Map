@@ -1,0 +1,14 @@
+{
+  "domain": "ortsnetz_map",
+  "name": "Ortsnetz Map Backend",
+  "version": "1.0.0",
+  "config_flow": true,
+  "single_config_entry": true,
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "documentation": "https://www.ortsnetz-auslastung.de/",
+  "requirements": [],
+  "codeowners": [
+    "@BeGiBue"
+  ]
+}
