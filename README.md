@@ -17,6 +17,12 @@ Dadurch ruft der Browser die externe Daten-API nicht direkt auf und CORS ist kei
 
 ## Installation über HACS
 
+Automatisch
+
+[![Open your Home Assistant instance and open this repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=BeGiBue&repository=home-assistant-ortsnetz-map&category=integration)
+
+Manuell
+
 1. Dieses Repository auf GitHub bereitstellen, empfohlen als `home-assistant-ortsnetz-map`.
 2. In HACS **Benutzerdefinierte Repositories** öffnen.
 3. Repository-URL hinzufügen und als Typ **Integration** auswählen.
