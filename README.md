@@ -1,6 +1,6 @@
 # Ortsnetz Map Backend
 
-**Version 1.0.0**
+**Version 1.0.1**
 
 Home-Assistant-Custom-Integration für die **Ortsnetz Map Card**. Das Backend lädt die öffentlichen Karten-Messpunkte von `ortsnetz-auslastung.de` serverseitig, cached sie über einen `DataUpdateCoordinator` und stellt sie der Dashboard-Card über eine authentifizierte Home-Assistant-WebSocket-API bereit.
 
