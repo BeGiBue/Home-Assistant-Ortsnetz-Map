@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
+import asyncio
 import logging
+from time import monotonic
 from typing import Any
 
-import async_timeout
 import voluptuous as vol
 
 from homeassistant.components import websocket_api
@@ -16,7 +16,14 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import API_URL, DOMAIN, UPDATE_INTERVAL_MINUTES
+from .const import (
+    API_URL,
+    CACHE_MAX_AGE_SECONDS,
+    DOMAIN,
+    FORCED_REFRESH_MIN_AGE_SECONDS,
+    REQUEST_TIMEOUT_SECONDS,
+    RETRY_AFTER_ERROR_SECONDS,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,22 +33,30 @@ type OrtsnetzMapConfigEntry = ConfigEntry
 
 
 class OrtsnetzDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
-    """Fetch and cache map points from ortsnetz-auslastung.de."""
+    """Fetch map points from ortsnetz-auslastung.de on demand and cache them.
 
-    def __init__(self, hass: HomeAssistant) -> None:
+    Es gibt kein festes Polling-Intervall (update_interval=None). Abgerufen wird
+    nur, wenn ein Client Daten anfragt und der Cache veraltet ist.
+    """
+
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         """Initialize the coordinator."""
         super().__init__(
             hass,
             logger=_LOGGER,
             name="Ortsnetz Map data",
-            update_interval=timedelta(minutes=UPDATE_INTERVAL_MINUTES),
+            config_entry=entry,
+            update_interval=None,
         )
+        self._lock = asyncio.Lock()
+        self._last_success: float | None = None
+        self._last_attempt: float | None = None
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch current map data."""
         session = async_get_clientsession(self.hass)
         try:
-            async with async_timeout.timeout(30):
+            async with asyncio.timeout(REQUEST_TIMEOUT_SECONDS):
                 response = await session.get(API_URL, headers={"Accept": "application/json"})
                 response.raise_for_status()
                 data = await response.json(content_type=None)
@@ -52,6 +67,34 @@ class OrtsnetzDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise UpdateFailed("Unexpected response from Ortsnetz map API")
         return data
 
+    async def async_get_data(self, force: bool = False) -> dict[str, Any] | None:
+        """Return cached data and refresh it first if needed.
+
+        - Frischer Cache: keine Anfrage an die externe API.
+        - Veralteter/leerer Cache: genau ein Abruf, parallele Anfragen warten
+          auf dasselbe Ergebnis.
+        - Schlägt der Abruf fehl, werden vorhandene Daten weiter ausgeliefert.
+        """
+        async with self._lock:
+            now = monotonic()
+            max_age = FORCED_REFRESH_MIN_AGE_SECONDS if force else CACHE_MAX_AGE_SECONDS
+            cache_fresh = (
+                self.data is not None
+                and self._last_success is not None
+                and now - self._last_success < max_age
+            )
+            in_error_cooldown = (
+                not self.last_update_success
+                and self._last_attempt is not None
+                and now - self._last_attempt < RETRY_AFTER_ERROR_SECONDS
+            )
+            if not cache_fresh and not in_error_cooldown:
+                self._last_attempt = monotonic()
+                await self.async_refresh()
+                if self.last_update_success:
+                    self._last_success = monotonic()
+            return self.data
+
 
 async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
     """Register the authenticated WebSocket API."""
@@ -61,8 +104,8 @@ async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
 
 async def async_setup_entry(hass: HomeAssistant, entry: OrtsnetzMapConfigEntry) -> bool:
     """Set up Ortsnetz Map from a config entry."""
-    coordinator = OrtsnetzDataCoordinator(hass)
-    await coordinator.async_config_entry_first_refresh()
+    # Bewusst kein Abruf beim Start: Daten werden erst bei der ersten Card-Anfrage geladen.
+    coordinator = OrtsnetzDataCoordinator(hass, entry)
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
     return True
 
@@ -95,11 +138,10 @@ async def ws_get_points(
         return
 
     coordinator: OrtsnetzDataCoordinator = next(iter(coordinators.values()))
-    if msg.get("refresh"):
-        await coordinator.async_request_refresh()
+    data = await coordinator.async_get_data(force=msg["refresh"])
 
-    if coordinator.data is None:
+    if data is None:
         connection.send_error(msg["id"], "no_data", "No Ortsnetz data available")
         return
 
-    connection.send_result(msg["id"], coordinator.data)
+    connection.send_result(msg["id"], data)
