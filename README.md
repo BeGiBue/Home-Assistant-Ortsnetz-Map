@@ -2,14 +2,16 @@
 
 **Version 1.0.1**
 
-Home-Assistant-Custom-Integration für die **Ortsnetz Map Card**. Das Backend lädt die öffentlichen Karten-Messpunkte von `ortsnetz-auslastung.de` serverseitig, cached sie über einen `DataUpdateCoordinator` und stellt sie der Dashboard-Card über eine authentifizierte Home-Assistant-WebSocket-API bereit.
+Home-Assistant-Custom-Integration für die **Ortsnetz Map Card**. Das Backend lädt die öffentlichen Karten-Messpunkte von `ortsnetz-auslastung.de` serverseitig, cached sie bedarfsgesteuert über einen `DataUpdateCoordinator` und stellt sie der Dashboard-Card über eine authentifizierte Home-Assistant-WebSocket-API bereit.
 
 Dadurch ruft der Browser die externe Daten-API nicht direkt auf und CORS ist kein Problem.
 
 ## Funktionen
 
 - Server-seitiger Abruf von `https://www.ortsnetz-auslastung.de/v1/map/points`
-- Standard-Aktualisierung alle 5 Minuten
+- Bedarfsgesteuerter Abruf: Daten werden nur geladen, wenn eine Card sie anfordert – kein Abruf beim Start und kein Hintergrund-Polling
+- Cache von 5 Minuten; mehrere Cards und Browser teilen sich einen Abruf
+- Nach einem fehlgeschlagenen Abruf 60 Sekunden Pause, solange werden die zuletzt geladenen Daten weiter ausgeliefert
 - Home-Assistant `DataUpdateCoordinator`
 - Authentifizierter WebSocket-Endpunkt `ortsnetz_map/get_points`
 - Einrichtung vollständig über **Einstellungen → Geräte & Dienste**
@@ -51,7 +53,7 @@ Die Card verwendet:
 ortsnetz_map/get_points
 ```
 
-Optional unterstützt der Endpunkt intern ein `refresh`-Flag, um vor der Antwort eine Aktualisierung anzufordern.
+Optional unterstützt der Endpunkt intern ein `refresh`-Flag, um vor der Antwort eine Aktualisierung anzufordern. Ein erneuter Abruf erfolgt dabei nur, wenn die gecachten Daten mindestens 60 Sekunden alt sind; andernfalls wird der Cache geliefert.
 
 ## Voraussetzungen
 
