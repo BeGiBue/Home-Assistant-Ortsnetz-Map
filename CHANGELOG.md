@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0-beta.1 (Vorabversion)
 
 - Daten werden bedarfsgesteuert abgerufen: kein Abruf beim Start und kein dauerhaftes Polling mehr, sondern nur bei Anfrage einer Card.
 - Cache von 5 Minuten; parallele Anfragen lösen höchstens einen Abruf aus.
