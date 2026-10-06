@@ -1,5 +1,10 @@
 # Ortsnetz Map Backend
 
+> [!WARNING]
+> **Dieses Repository ist veraltet und wird nicht mehr weiterentwickelt.**
+>
+> Der Nachfolger ist **[ha-ortsnetz-auslastung](https://github.com/BeGiBue/ha-ortsnetz-auslastung)**. Bitte verwende für neue Installationen und die weitere Entwicklung das neue Repository.
+
 **Version 1.0.1**
 
 Home-Assistant-Custom-Integration für die **Ortsnetz Map Card**. Das Backend lädt die öffentlichen Karten-Messpunkte von `ortsnetz-auslastung.de` serverseitig, cached sie bedarfsgesteuert über einen `DataUpdateCoordinator` und stellt sie der Dashboard-Card über eine authentifizierte Home-Assistant-WebSocket-API bereit.
