@@ -19,6 +19,8 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .const import (
     API_URL,
     CACHE_MAX_AGE_SECONDS,
+    CONF_CACHE_MAX_AGE,
+    CONF_RETRY_AFTER_ERROR,
     DOMAIN,
     FORCED_REFRESH_MIN_AGE_SECONDS,
     REQUEST_TIMEOUT_SECONDS,
@@ -47,6 +49,10 @@ class OrtsnetzDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             name="Ortsnetz Map data",
             config_entry=entry,
             update_interval=None,
+        )
+        self._cache_max_age: int = entry.options.get(CONF_CACHE_MAX_AGE, CACHE_MAX_AGE_SECONDS)
+        self._retry_after_error: int = entry.options.get(
+            CONF_RETRY_AFTER_ERROR, RETRY_AFTER_ERROR_SECONDS
         )
         self._lock = asyncio.Lock()
         self._last_success: float | None = None
@@ -77,7 +83,7 @@ class OrtsnetzDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """
         async with self._lock:
             now = monotonic()
-            max_age = FORCED_REFRESH_MIN_AGE_SECONDS if force else CACHE_MAX_AGE_SECONDS
+            max_age = FORCED_REFRESH_MIN_AGE_SECONDS if force else self._cache_max_age
             cache_fresh = (
                 self.data is not None
                 and self._last_success is not None
@@ -86,7 +92,7 @@ class OrtsnetzDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             in_error_cooldown = (
                 not self.last_update_success
                 and self._last_attempt is not None
-                and now - self._last_attempt < RETRY_AFTER_ERROR_SECONDS
+                and now - self._last_attempt < self._retry_after_error
             )
             if not cache_fresh and not in_error_cooldown:
                 self._last_attempt = monotonic()

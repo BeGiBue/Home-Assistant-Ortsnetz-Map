@@ -16,3 +16,9 @@ FORCED_REFRESH_MIN_AGE_SECONDS = 60
 RETRY_AFTER_ERROR_SECONDS = 60
 
 REQUEST_TIMEOUT_SECONDS = 30
+
+# Options (Einstellungen → Geräte & Dienste → Ortsnetz Map → Konfigurieren)
+CONF_CACHE_MAX_AGE = "cache_max_age"
+CONF_RETRY_AFTER_ERROR = "retry_after_error"
+CACHE_MAX_AGE_RANGE = (60, 3600)
+RETRY_AFTER_ERROR_RANGE = (30, 600)

@@ -10,9 +10,10 @@ Dadurch ruft der Browser die externe Daten-API nicht direkt auf und CORS ist kei
 
 - Server-seitiger Abruf von `https://www.ortsnetz-auslastung.de/v1/map/points`
 - Bedarfsgesteuerter Abruf: Daten werden nur geladen, wenn eine Card sie anfordert – kein Abruf beim Start und kein Hintergrund-Polling
-- Cache von 5 Minuten; mehrere Cards und Browser teilen sich einen Abruf
-- Nach einem fehlgeschlagenen Abruf 60 Sekunden Pause, solange werden die zuletzt geladenen Daten weiter ausgeliefert
+- Cache von standardmäßig 5 Minuten; mehrere Cards und Browser teilen sich einen Abruf
+- Nach einem fehlgeschlagenen Abruf standardmäßig 60 Sekunden Pause, solange werden die zuletzt geladenen Daten weiter ausgeliefert
 - Home-Assistant `DataUpdateCoordinator`
+- Cache-Dauer und Pause nach Fehlern nachträglich einstellbar (**Konfigurieren**)
 - Authentifizierter WebSocket-Endpunkt `ortsnetz_map/get_points`
 - Einrichtung vollständig über **Einstellungen → Geräte & Dienste**
 - Keine Lovelace-Ressource im Backend-Repository – die Card wird separat über HACS installiert
@@ -31,6 +32,17 @@ Manuell
 4. Home Assistant neu starten.
 5. **Einstellungen → Geräte & Dienste → Integration hinzufügen → Ortsnetz Map** öffnen und einrichten.
 6. Zusätzlich die separate [Ortsnetz Map Card](https://github.com/BeGiBue/ortsnetz-map-card) über HACS installieren.
+
+## Einstellungen
+
+Unter **Einstellungen → Geräte & Dienste → Ortsnetz Map → Konfigurieren** lassen sich nach der Einrichtung ändern:
+
+| Einstellung | Bereich | Standard | Wirkung |
+|---|---|---|---|
+| Cache-Dauer | 60–3600 s | 300 s | So lange werden Messpunkte ohne neuen Abruf ausgeliefert |
+| Pause nach Fehler | 30–600 s | 60 s | So lange wird nach einem fehlgeschlagenen Abruf kein neuer Versuch gestartet |
+
+Nach dem Speichern lädt die Integration automatisch neu.
 
 ## Datenfluss
 
